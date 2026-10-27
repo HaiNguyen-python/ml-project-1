@@ -3,6 +3,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 import joblib 
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import cross_val_score
 
 #1. Load the data (150 flowers, 4 measurements each)
 X, y = load_iris(return_X_y = True)
@@ -13,8 +15,15 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42)
 
 #3. Create and train the model
-model = LogisticRegression(max_iter=200)
+model = DecisionTreeClassifier(random_state=42)
 model.fit(X_train, y_train)
+
+for name, m in [
+    ("Logistic Regression", LogisticRegression(max_iter=200)),
+    ("Decision Tree", DecisionTreeClassifier(random_state=42)),
+]:
+    scores = cross_val_score(m, X, y, cv=5) #5 different train/test splits
+    print(f"{name}: mean accuracy = {scores.mean():.3f}")
 
 #4. Check how good it is on data it has never seen
 predictions = model.predict(X_test)
