@@ -1,0 +1,8 @@
+#Virtual environment - large and can be recreated
+.venv/
+
+#Python cache files
+__pycache__/
+
+#Trained model files - recreated by running train.py 
+*.joblib
