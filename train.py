@@ -5,6 +5,9 @@ from sklearn.metrics import accuracy_score
 import joblib 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import cross_val_score
+from pathlib import Path
+
+MODEL_PATH = Path(__file__).parent / "model.joblib"
 
 #1. Load the data (150 flowers, 4 measurements each)
 X, y = load_iris(return_X_y = True)
@@ -30,6 +33,6 @@ predictions = model.predict(X_test)
 print("Test accuracy:", accuracy_score(y_test, predictions))
 
 #5. Save the trained model to a file(we use it in Project 2)
-joblib.dump(model, "model.joblib")
-print("Model saved to model.joblib")
+joblib.dump(model, MODEL_PATH)
+print("Model saved to", MODEL_PATH)
 
