@@ -1,7 +1,7 @@
 #app.py - a web API that serves the trained Iris model
 from pathlib import Path
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import joblib
 
 #Find model.joblib next to this file, wherever the terminal is
@@ -15,12 +15,13 @@ SPECIES = ["setosa", "versicolor", "virginica"]
 
 app = FastAPI(title = "Iris Classifier API")
 
-#Describe the input the API expects (4 measurements in cm)
+# Describe the input the API expects (4 measurements in cm).
+# gt = greater than, le = less than or equal: values outside this range get a 422 error
 class Flower(BaseModel):
-    sepal_length: float
-    sepal_width: float
-    petal_length: float
-    petal_width: float
+    sepal_length: float = Field(gt=0, le=10, description="Sepal length in cm")
+    sepal_width: float = Field(gt=0, le=10, description="Sepal width in cm")
+    petal_length: float = Field(gt=0, le=10, description="Petal length in cm")
+    petal_width: float = Field(gt=0, le=10, description="Petal width in cm")
 
 @app.get("/")
 def home():
