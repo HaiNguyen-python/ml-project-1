@@ -8,7 +8,7 @@ jobs:
         steps: 
             - uses: actions/checkout@v4  #1. download the code
             - uses: actions/setup-python@v5  #2. install Python
-             with: 
+              with:
                 python-version: "3.12"
             - name: Install libraries   #3. install requirements
               run: pip install -r requirements.txt 
