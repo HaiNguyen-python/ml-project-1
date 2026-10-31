@@ -26,7 +26,7 @@ class Flower(BaseModel):
 @app.get("/")
 def home():
     #Friendly message for the root address
-    return {"message": "Iris Classifier API. Open /docs to try it."}
+    return {"message": "Iris Classifier API v2 - deployed automatically. Open /docs to try it."}
 
 @app.get("/health")
 def health():

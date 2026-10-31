@@ -43,3 +43,17 @@ jobs:
           tags: |
             ghcr.io/hainguyen-python/ml-project-1:latest
             ghcr.io/hainguyen-python/ml-project-1:${{ github.sha }}
+
+            
+  # ---------- Continuous Deployment: put the new image live on Render ----------
+  deploy:
+    needs: docker                               # only after the new image was published
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}   # the secret from Step 6
+        run: |
+          # Tell Render to deploy the image built from THIS commit (tag = commit SHA)
+          IMG="ghcr.io%2Fhainguyen-python%2Fml-project-1%3A${{ github.sha }}"
+          curl -fsS -X POST "${HOOK}&imgURL=${IMG}"
