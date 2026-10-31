@@ -1,18 +1,45 @@
-name: tests
+# CI/CD: test the code, then build and publish the Docker image
+name: ci-cd
 
-on: [push, pull_request] #when to run: every push and every pull request 
+on: [push, pull_request]   # when to run: every push and every pull request
 
-jobs: 
-    test: 
-        runs-on: ubuntu-latest #Github gives us a fresh Linux machine
-        steps: 
-            - uses: actions/checkout@v4  #1. download the code
-            - uses: actions/setup-python@v5  #2. install Python
-              with:
-                python-version: "3.12"
-            - name: Install libraries   #3. install requirements
-              run: pip install -r requirements.txt 
-            - name: Train the model     #4. create model.joblib (it is not in Git)
-              run: python train.py
-            - name: Run tests       #5. run pytest
-              run: python -m pytest -v 
+jobs:
+  # ---------- CI: run the tests ----------
+  test:
+    runs-on: ubuntu-latest                   # GitHub gives us a fresh Linux machine
+    steps:
+      - uses: actions/checkout@v4            # 1. download the code
+      - uses: actions/setup-python@v5        # 2. install Python
+        with:
+          python-version: "3.12"
+      - name: Install libraries              # 3. install requirements
+        run: pip install -r requirements.txt
+      - name: Train the model                # 4. create model.joblib (it is not in Git)
+        run: python train.py
+      - name: Run tests                      # 5. run pytest
+        run: python -m pytest -v
+
+  # ---------- CD: build and publish the image ----------
+  docker:
+    needs: test                              # only start if the test job passed
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'   # only for pushes to main
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read                         # read the code
+      packages: write                        # allow uploading to GitHub Container Registry
+    steps:
+      - uses: actions/checkout@v4
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}   # built-in token, no setup needed
+      - name: Build and push the image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/hainguyen-python/ml-project-1:latest
+            ghcr.io/hainguyen-python/ml-project-1:${{ github.sha }}
