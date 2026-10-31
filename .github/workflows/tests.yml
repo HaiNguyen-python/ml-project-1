@@ -1,0 +1,18 @@
+name: tests
+
+on: [push, pull_request] #when to run: every push and every pull request 
+
+jobs: 
+    test: 
+        runs-on: ubuntu-latest #Github gives us a fresh Linux machine
+        steps: 
+            - uses: actions/checkout@v4  #1. download the code
+            - uses: actions/setup-python@v5  #2. install Python
+             with: 
+                python-version: "3.12"
+            - name: Install libraries   #3. install requirements
+              run: pip install -r requirements.txt 
+            - name: Train the model     #4. create model.joblib (it is not in Git)
+              run: python train.py
+            - name: Run tests       #5. run pytest
+              run: python -m pytest -v 
