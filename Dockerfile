@@ -18,4 +18,4 @@ RUN python train.py
 EXPOSE 8000
 
 # 0.0.0.0 = accept requests from outside the container (127.0.0.1 would block them)
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "exec uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"]
